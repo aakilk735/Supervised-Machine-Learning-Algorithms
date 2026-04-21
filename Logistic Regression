@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix
+# Load Excel File
+df = pd.read_excel("logistic_regression_dataset.xlsx")
+
+# Define X and y
+X = df[['Hours']]
+y = df['Pass']
+
+# Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+# Model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+# Prediction on test data
+y_pred = model.predict(X_test)
+
+# Accuracy
+print("Accuracy:", accuracy_score(y_test, y_pred))
+
+# Confusion Matrix
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# New Input Prediction
+new_data = pd.DataFrame({'Hours': [3, 7]})
+prediction = model.predict(new_data)
+print("New Input:", new_data['Hours'].tolist())
+print("Prediction (0=Fail, 1=Pass):", prediction)
+
+# Graph
+plt.scatter(X['Hours'], y)
+X_range = np.linspace(X['Hours'].min(), X['Hours'].max(), 100)
+X_range_df = pd.DataFrame(X_range, columns=['Hours'])
+y_prob = model.predict_proba(X_range_df)[:,1]
+plt.plot(X_range, y_prob)
+plt.scatter(new_data['Hours'], prediction, marker='X', s=100)
+plt.xlabel("Study Hours")
+plt.ylabel("Pass (0/1)")
+plt.title("Logistic Regression")
+plt.show()
