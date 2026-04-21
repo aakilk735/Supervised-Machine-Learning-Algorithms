@@ -1,0 +1,49 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+data = pd.read_excel("study_hours_marks_50_marks_only.xlsx")
+print("Dataset Preview:")
+print(data.head())
+
+X = data[['StudyHours']]
+y = data['Marks']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+model = LinearRegression()
+
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print("\nPredicted Marks for Test Data:")
+print(y_pred)
+
+import pandas as pd
+
+hours = pd.DataFrame([[8]], columns=['StudyHours'])
+prediction = model.predict(hours)
+if prediction[0] > 100:
+    prediction[0] = 100
+
+print("Predicted Marks for 8 hours study:", prediction)
+
+print("\nSlope (m):", model.coef_)
+print("Intercept (b):", model.intercept_)
+
+accuracy = model.score(X_test, y_test)
+print("Model Accuracy (R^2):", accuracy)
+
+plt.scatter(X, y)
+plt.plot(X, model.predict(X))
+
+plt.title("Study Hours vs Marks (Linear Regression)")
+plt.xlabel("Study Hours")
+plt.ylabel("Marks")
+
+plt.show()
